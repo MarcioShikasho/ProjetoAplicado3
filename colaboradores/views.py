@@ -6,7 +6,7 @@ def listar_colaboradores(request):
     colaboradores = Colaborador.objects.all()
     return render(request, 'colaboradores/listar_colaboradores.html', {'colaboradores': colaboradores})
 
-def criar_colaborador(request):
+def cadastrar_colaborador(request):
     if request.method == "POST":
         form = ColaboradorForm(request.POST)
         if form.is_valid():
@@ -14,7 +14,7 @@ def criar_colaborador(request):
             return redirect('listar_colaboradores')
     else:
         form = ColaboradorForm()
-    return render(request, 'colaboradores/criar_colaborador.html', {'form': form})
+    return render(request, 'colaboradores/cadastrar.html', {'form': form})
 
 def editar_colaborador(request, pk):
     colaborador = Colaborador.objects.get(pk=pk)
