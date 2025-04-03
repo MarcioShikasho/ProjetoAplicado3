@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exibir Usuários</title>
+</head>
+<body>
+    <h2>Colaboradores</h2>
+
+    <ul>
+        <li><a href="{% url 'home' %}">Página Inicial</a></li>
+        <li><a href="{% url 'listar_colaboradores' %}">Listar Colaboradores</a></li>
+        <li><a href="{% url 'login' %}">Treinamentos</a></li>
+        <li><a href="{% url 'login' %}">logout</a></li>
+    </ul>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Sobrenome</th>
+                <th>Email</th>
+                <th>Cargo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for colaborador in colaboradores %}
+                <tr>
+                    <td>{{ colaborador.nome }}</td>
+                    <td>{{ colaborador.sobrenome }}</td>
+                    <td>{{ colaborador.email }}</td>
+                    <td>{{ colaborador.cargo }}</td>
+
+                    <form action="{% url 'editar_colaborador' colaborador.id %}" method="get" style="display:inline;">
+                        <button type="submit">Editar</button>
+                    </form>
+
+                    <form action="{% url 'excluir_colaborador' colaborador.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este colaborador?');">Excluir</button>
+                    </form>
+                </tr>
+
+            {% endfor %}
+            <a href="{% url 'cadastrar_colaborador' %}">Cadastrar Colaborador</a>
+        </tbody>
+    </table>
+
+</body>
+</html>

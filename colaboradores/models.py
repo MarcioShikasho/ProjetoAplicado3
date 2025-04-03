@@ -6,7 +6,7 @@ class Colaborador(models.Model):
     email = models.EmailField(unique=True)
     cargo = models.CharField(max_length=100)
     data_admissao = models.DateField()
-    senha = models.CharField(max_length=12, default='senha123')
+    senha = models.CharField(max_length=12)
     
     def __str__(self):
         return self.nome

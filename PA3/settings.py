@@ -130,6 +130,6 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# LOGIN_URL = '/accounts/login/'  # URL do login
+LOGIN_URL = '/accounts/login/'  # URL do login
 
-# LOGIN_REDIRECT_URL = '/home'  # URL para onde o usuário será redirecionado após o login
+LOGIN_REDIRECT_URL = '/'  # URL para onde o usuário será redirecionado após o login
