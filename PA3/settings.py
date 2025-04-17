@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     #Apps criados
     'colaboradores',
     'treinamentos',
+    'contas',
 ]
 
 MIDDLEWARE = [
