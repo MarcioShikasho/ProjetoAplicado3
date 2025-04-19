@@ -20,28 +20,16 @@ class Colaborador(models.Model):
 
 # Atribui o ID ao campo matricula e cria e-mail com o nome.matricula/id, depois que o objeto for salvo    
     def save(self, *args, **kwargs):
-        criando = self.pk is None 
-        atualizou_algo = False
+        verifica_pk = self.pk is None 
         
         super().save(*args, **kwargs)  # Primeiro save: cria o ID
 
-        nome_antigo = None
-        if criando:
-            if not self.matricula:
+        if verifica_pk:
+            if not self.matricula and not self.usuario:
                 self.matricula = self.id
-                atualizou_algo = True
-
-            if not self.usuario:
-                self.criar_usuario()
-                atualizou_algo = True
-        
-        if not criando and self.nome != nome_antigo:
-            self.atualizar_email()
-            atualizou_algo = True
-            
-        if atualizou_algo:
-            super().save(update_fields=['matricula', 'usuario', 'email'])
-                   
+                self.criar_usuario()             
+                self.atualizar_email()
+                super().save(update_fields=['matricula', 'usuario', 'email'])           
         
     def criar_usuario(self):
         if self.id:
