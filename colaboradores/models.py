@@ -3,7 +3,7 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from treinamentos.models import Treinamento
 from contas.models import Conta
-
+from django.utils.text import slugify
 
 class Colaborador(models.Model):
     nome = models.CharField(max_length=50)
@@ -21,32 +21,51 @@ class Colaborador(models.Model):
 # Atribui o ID ao campo matricula e cria e-mail com o nome.matricula/id, depois que o objeto for salvo    
     def save(self, *args, **kwargs):
         criando = self.pk is None 
-
+        atualizou_algo = False
+        
         super().save(*args, **kwargs)  # Primeiro save: cria o ID
 
-        if criando and not self.matricula:
-            self.matricula = self.id
-            #super().save(update_fields=['matricula'])  # Segundo save: atribui o ID para matricula
-    
-        if criando and not self.usuario:
-            self.criar_usuario()
+        nome_antigo = None
+        if criando:
+            if not self.matricula:
+                self.matricula = self.id
+                atualizou_algo = True
+
+            if not self.usuario:
+                self.criar_usuario()
+                atualizou_algo = True
+        
+        if not criando and self.nome != nome_antigo:
+            self.atualizar_email()
+            atualizou_algo = True
             
-        super().save(update_fields=['matricula', 'usuario', 'email'])  # Segundo save: gera o e-mail
+        if atualizou_algo:
+            super().save(update_fields=['matricula', 'usuario', 'email'])
+                   
         
     def criar_usuario(self):
         if self.id:
-            email_usuario = f"{self.nome.lower()}.{self.id}@empresa.com"
-            print(email_usuario)
+            nome_slug = slugify(self.nome)
+            email_usuario = f"{nome_slug}.{self.matricula or self.id}@empresa.com"
+            
             usuario = Conta.objects.create_user(
                 email=email_usuario,
                 password=self.cpf, 
                 nome=self.nome
             )
-        self.usuario = usuario    
+        self.usuario = usuario
+        self.email = email_usuario    
             
     def __str__(self):
         return self.nome
 
+    def atualizar_email(self):
+        if self.usuario:
+            nome_slug = slugify(self.nome)
+            novo_email = f"{nome_slug}.{self.matricula}@empresa.com"
+            self.usuario.email = novo_email
+            self.usuario.save()
+            self.email = novo_email
 
 class TreinamentoColaborador(models.Model):
     colaborador = models.ForeignKey(Colaborador, on_delete=models.CASCADE)
