@@ -1,0 +1,27 @@
+/* Centralizando o login na tela */
+.container {
+    min-height: 100vh;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Estilo dos ícones nos cards */
+.card i {
+    color: #007bff;
+}
+
+/* Card ajustado para aparência melhor */
+.card {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tamanho do botão */
+.btn {
+    width: 100%;
+}

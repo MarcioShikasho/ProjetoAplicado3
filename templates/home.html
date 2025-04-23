@@ -1,12 +1,30 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Página Inicial</title>
-</head>
-<body>
-    <h1>Bem-vindo à página inicial do projeto PA3!</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    <a href="{% url 'cadastrar_colaborador' %}">Cadastrar Usuário</a>
-</body>
-</html>
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Colaboradores</h5>
+                    <p class="card-text">Ver ou cadastrar colaboradores.</p>
+                    <a href="{% url 'listar_colaboradores' %}" class="btn btn-primary">Ver Colaboradores</a>
+                    <a href="{% url 'cadastrar_colaborador' %}" class="btn btn-secondary">Cadastrar Colaborador</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-journal-text" style="font-size: 3rem;"></i>
+                    <h5 class="card-title mt-3">Treinamentos</h5>
+                    <p class="card-text">Ver ou cadastrar treinamentos.</p>
+                    <a href="{% url 'listar_treinamentos' %}" class="btn btn-primary">Ver Treinamentos</a>
+                    <a href="{% url 'cadastrar_treinamento' %}" class="btn btn-secondary">Cadastrar Treinamento</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
