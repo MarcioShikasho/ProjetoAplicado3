@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Colaborador
 from .forms import ColaboradorForm
+from .forms import TreinamentoColaborador
+
 
 def listar_colaboradores(request):
     colaboradores = Colaborador.objects.all()
     return render(request, 'colaboradores/listar_colaboradores.html', {'colaboradores': colaboradores})
+
 
 def cadastrar_colaborador(request):
     if request.method == "POST":
@@ -15,6 +18,7 @@ def cadastrar_colaborador(request):
     else:
         form = ColaboradorForm()
     return render(request, 'colaboradores/cadastrar.html', {'form': form})
+
 
 def editar_colaborador(request, pk):
     colaborador = Colaborador.objects.get(pk=pk)
@@ -27,7 +31,18 @@ def editar_colaborador(request, pk):
         form = ColaboradorForm(instance=colaborador)
     return render(request, 'colaboradores/editar_colaborador.html', {'form': form})
 
+
 def excluir_colaborador(request, pk):
     colaborador = Colaborador.objects.get(pk=pk)
     colaborador.delete()
     return redirect('listar_colaboradores')
+
+
+def listar_treinamentos_colaborador(request, colaborador_id):
+    colaborador = get_object_or_404(Colaborador, id=colaborador_id)
+    treinamentos_relacionados = TreinamentoColaborador.objects.filter(colaborador=colaborador)
+
+    return render(request, 'colaboradores/listar_treinamentos_colaborador.html', {
+        'colaborador': colaborador,
+        'treinamentos_relacionados': treinamentos_relacionados
+    })

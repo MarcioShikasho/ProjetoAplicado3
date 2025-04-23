@@ -1,0 +1,39 @@
+<!-- colaboradores/templates/colaboradores/listar_treinamentos_colaborador.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamentos do Colaborador</title>
+</head>
+<body>
+
+    <h2>Treinamentos de {{ colaborador.nome }}</h2>
+
+    {% if treinamentos_relacionados %}
+        <table border="1">
+        <thead>
+            <tr>
+            <th>Treinamento</th>
+            <th>Status</th>
+            <th>Data de Conclusão</th>
+            <th>Validade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for relacao in treinamentos_relacionados %}
+            <tr>
+                <td>{{ relacao.treinamento.nome }}</td>
+                <td>{{ relacao.get_status_display }}</td>
+                <td>{{ relacao.data_conclusao|default:"-"|date:"d/m/Y" }}</td>
+                <td>{{ relacao.data_validade_treinamento|default:"-"|date:"d/m/Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+        <p>Este colaborador ainda não possui treinamentos atribuídos.</p>
+    {% endif %}
+
+</body>
+</html>

@@ -11,7 +11,7 @@
     <ul>
         <li><a href="{% url 'home' %}">Página Inicial</a></li>
         <li><a href="{% url 'listar_colaboradores' %}">Listar Colaboradores</a></li>
-        <li><a href="{% url 'login' %}">Treinamentos</a></li>
+        <li><a href="{% url 'listar_treinamentos' %}">Listar Treinamentos</a></li>
         <li><a href="{% url 'login' %}">logout</a></li>
     </ul>
     
@@ -35,21 +35,27 @@
                     <td>{{ colaborador.nome }}</td>
                     <td>{{ colaborador.sobrenome }}</td>
                     <td>{{ colaborador.cpf }}</td>
-                    <td>{{ colaborador.data_nascimento }}</td>
+                    <td>{{ colaborador.data_nascimento|date:"d/m/Y" }}</td>
                     <td>{{ colaborador.email }}</td>
                     <td>{{ colaborador.telefone }}</td>
                     <td>{{ colaborador.cargo }}</td>
-                    <td>{{ colaborador.data_admissao }}</td>
+                    <td>{{ colaborador.data_admissao|date:"d/m/Y" }}</td>
                     <td>{{ colaborador.matricula }}</td>
+                    <td>
+                        <form action="{% url 'listar_treinamentos_colaborador' colaborador.id %}" method="get" style="display: inline;">
+                            <button type="submit">Visualizar</button>
+                        </a>
+                        </form>
 
-                    <form action="{% url 'editar_colaborador' colaborador.id %}" method="get" style="display:inline;">
-                        <button type="submit">Editar</button>
-                    </form>
+                        <form action="{% url 'editar_colaborador' colaborador.id %}" method="get" style="display:inline;">
+                            <button type="submit">Editar</button>
+                        </form>
 
-                    <form action="{% url 'excluir_colaborador' colaborador.id %}" method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este colaborador?');">Excluir</button>
-                    </form>
+                        <form action="{% url 'excluir_colaborador' colaborador.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este colaborador?');">Excluir</button>
+                        </form>
+                    </td>
                 </tr>
 
             {% endfor %}

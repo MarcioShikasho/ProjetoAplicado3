@@ -25,4 +25,3 @@ urlpatterns = [
     path('treinamentos/', include('treinamentos.urls')),
     path('', views.home, name='home'),
 ]
-

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Treinamento</title>
+</head>
+<body>
+    <h2>Criar Treinamento</h2>
+
+    <ul>
+        <li><a href="{% url 'home' %}">Página Inicial</a></li>
+        <li><a href="{% url 'listar_colaboradores' %}">Listar Colaboradores</a></li>
+        <li><a href="{% url 'listar_treinamentos' %}">Listar Treinamentos</a></li>
+        <li><a href="{% url 'login' %}">logout</a></li>
+    </ul>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Cadastrar</button>
+    </form>
+
+</body>
+</html>

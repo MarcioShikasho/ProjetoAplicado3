@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Treinamentos</h2>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="mb-3">
+        <a href="{% url 'cadastrar_treinamento' %}" class="btn btn-primary">Novo Treinamento</a>
+        <a href="{% url 'atribuir_treinamento' %}" class="btn btn-success">Atribuir Treinamento</a>
+    </div>
+    
+    {% if treinamentos %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Status</th>
+                <th>Validade (meses)</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for treinamento in treinamentos %}
+            <tr>
+                <td>{{ treinamento.nome }}</td>
+                <td>{{ treinamento.descricao }}</td>
+                <td>{{ treinamento.get_status_display }}</td>
+                <td>{{ treinamento.prazo_validade }}</td>
+                <td>
+                    <a href="{% url 'listar_colaboradores_treinamento' treinamento.id %}" class="btn btn-sm btn-info">Ver Colaboradores</a>
+                    <a href="{% url 'editar_treinamento' treinamento.id %}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{% url 'excluir_treinamento' treinamento.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este treinamento?')">Excluir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">
+        Nenhum treinamento cadastrado.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

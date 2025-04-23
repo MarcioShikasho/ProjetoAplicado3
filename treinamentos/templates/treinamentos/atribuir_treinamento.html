@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+{% block content %}
+<div class="container">
+    <h2>Atribuir Treinamento</h2>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            Por favor, corrija os erros abaixo.
+        </div>
+        {% endif %}
+        
+        <div class="form-group mb-3">
+            {{ form.treinamento.label_tag }}
+            {{ form.treinamento.errors }}
+            {{ form.treinamento }}
+        </div>
+        
+        <div class="form-group mb-3">
+            <label>Tipo de Atribuição:</label>
+            {{ form.tipo_atribuicao.errors }}
+            {{ form.tipo_atribuicao }}
+        </div>
+        
+        <div id="div_colaboradores" class="form-group mb-3">
+            {{ form.colaboradores.label_tag }}
+            {{ form.colaboradores.errors }}
+            <div class="colaboradores-list">
+                {{ form.colaboradores }}
+            </div>
+        </div>
+        
+        <div id="div_cargo" class="form-group mb-3" style="display:none;">
+            {{ form.cargo.label_tag }}
+            {{ form.cargo.errors }}
+            {{ form.cargo }}
+        </div>
+        
+        <div class="form-group mb-3">
+            {{ form.data_conclusao.label_tag }}
+            {{ form.data_conclusao.errors }}
+            {{ form.data_conclusao }}
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Atribuir Treinamento</button>
+            <a href="{% url 'listar_treinamentos' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // JavaScript para alternar entre as opções de atribuição
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoAtribuicao = document.querySelectorAll('input[name="tipo_atribuicao"]');
+        const divColaboradores = document.getElementById('div_colaboradores');
+        const divCargo = document.getElementById('div_cargo');
+        
+        function toggleAtribuicao() {
+            const selectedValue = document.querySelector('input[name="tipo_atribuicao"]:checked').value;
+            
+            if (selectedValue === 'individual') {
+                divColaboradores.style.display = 'block';
+                divCargo.style.display = 'none';
+            } else if (selectedValue === 'cargo') {
+                divColaboradores.style.display = 'none';
+                divCargo.style.display = 'block';
+            }
+        }
+        
+        // Inicializar
+        toggleAtribuicao();
+        
+        // Adicionar event listeners
+        tipoAtribuicao.forEach(radio => {
+            radio.addEventListener('change', toggleAtribuicao);
+        });
+    });
+    
+    $(".datamask").inputmask({
+        mask: "99/99/9999",
+        placeholder: "dd/mm/aaaa",
+        showMaskOnHover: true,
+        showMaskOnFocus: true,
+        insertMode: false,        // Modo overtype
+        clearMaskOnLostFocus: false
+    });
+    
+    // Manipulador de eventos personalizado para teclas numéricas
+    $(".datamask").on("keydown", function(e) {
+        // Apenas processar teclas numéricas
+        if ((e.key >= '0' && e.key <= '9') || e.keyCode === 8) {
+            let curPos = this.selectionStart;
+            let value = this.value;
+            
+            // Se estiver na posição de uma barra (posição 2 ou 5)
+            if (curPos === 2 || curPos === 5) {
+                if (e.keyCode !== 8) { // Se não for tecla de backspace
+                    e.preventDefault();
+                    
+                    // Avança o cursor para depois da barra e simula a digitação
+                    setTimeout(() => {
+                        this.setSelectionRange(curPos + 1, curPos + 1);
+                        let newEvent = new KeyboardEvent('keydown', {
+                            key: e.key,
+                            keyCode: e.keyCode,
+                            which: e.which,
+                            code: e.code,
+                            bubbles: true
+                        });
+                        this.dispatchEvent(newEvent);
+                    }, 5);
+                }
+            }
+        }
+    });
+    
+    // Foco automaticamente seleciona todo o conteúdo
+    $(".datamask").on("focus", function() {
+        $(this).select();
+    });
+</script>
+
+{% endblock %}

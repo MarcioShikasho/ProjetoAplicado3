@@ -4,6 +4,7 @@ from django.utils import timezone
 from treinamentos.models import Treinamento
 from contas.models import Conta
 from django.utils.text import slugify
+from unidecode import unidecode
 
 class Colaborador(models.Model):
     nome = models.CharField(max_length=50)
@@ -17,36 +18,31 @@ class Colaborador(models.Model):
     data_admissao = models.DateField()
 
     usuario = models.OneToOneField(Conta, on_delete=models.CASCADE, related_name='colaborador', null=True, blank=True)
-
+    treinamentos = models.ManyToManyField(Treinamento, through='TreinamentoColaborador', related_name='colaboradores_inscritos', blank=True)
 # Atribui o ID ao campo matricula e cria e-mail com o nome.matricula/id, depois que o objeto for salvo    
-    def save(self, *args, **kwargs):
-        verifica_pk = self.pk is None 
-        atualizou_algo = False
-        
-        nome_antigo = None
-        
-        if not verifica_pk:
-            antigo = Colaborador.objects.get(pk=self.pk)
-            nome_antigo = antigo.nome
-            
+    def save(self, *args, **kwargs):           
         super().save(*args, **kwargs)  # Primeiro save: cria o ID
+        self.refresh_from_db()
+        
+        atualizou_algo = False 
+        verifica_pk = self.pk is None 
 
-        if verifica_pk:
+        if not verifica_pk:
+            self.atualizar_email()
+            
             if not self.matricula:
                 self.matricula = self.id
-                atualizou_algo = True
-
-            if not self.usuario:
-                self.criar_usuario()
-                atualizou_algo = True
                 
-        if not verifica_pk and self.nome != nome_antigo:
-                self.atualizar_email()
-                atualizou_algo = True
+                cargo_normalizado = unidecode(self.cargo.lower())
+            
+                if cargo_normalizado in ['tecnico', 'gerenciador']:
+                    self.criar_usuario()
+                
+            atualizou_algo = True 
 
         if atualizou_algo:
             super().save(update_fields=['matricula', 'usuario', 'email'])                
-        
+            
     def criar_usuario(self):
         if self.id:
             nome_slug = slugify(self.nome)
@@ -70,6 +66,7 @@ class Colaborador(models.Model):
             self.usuario.email = novo_email
             self.usuario.save()
             self.email = novo_email
+            
 
 class TreinamentoColaborador(models.Model):
     colaborador = models.ForeignKey(Colaborador, on_delete=models.CASCADE)
@@ -77,21 +74,38 @@ class TreinamentoColaborador(models.Model):
     data_conclusao = models.DateField(null=True, blank=True)
     data_validade_treinamento = models.DateField(null=True, blank=True)
 
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('valido', 'Válido'),
+        ('vencido', 'Vencido'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pendente')
+
     def calcular_validade(self):
         if self.data_conclusao:
-            prazo_validade = self.treinamento.prazo_validade  # Obtemos a validade do treinamento
+            prazo_validade = self.treinamento.prazo_validade  # Pega o prazo de validade do treinamento
             return self.data_conclusao + relativedelta(months=prazo_validade)
-        return None 
-    
-    #Calcula a validade do treinamento a partir da data de conclusão
+        return None
+
     def atualizar_validade_treinamento(self):
+        # Verifica se há data de conclusão
         if self.data_conclusao:
+            # Calcula a data de validade
             data_final = self.data_conclusao + relativedelta(months=self.treinamento.prazo_validade)
+            self.data_validade_treinamento = data_final
+
+            # Atualiza o status dependendo da validade
             if data_final < timezone.now().date():
-                self.data_validade_treinamento = None
+                self.status = 'vencido'  # Se a validade está no passado
             else:
-                self.data_validade_treinamento = data_final
-            self.save()
-                    
+                self.status = 'valido'  # Se a validade está no futuro
+        else:
+            # Se não há data de conclusão, o status é "pendente"
+            self.status = 'pendente'
+
+        # Salva o objeto para garantir que as mudanças sejam persistidas no banco de dados
+        self.save()
+
+
     def __str__(self):
         return f"{self.colaborador.nome} - {self.treinamento.nome}"
