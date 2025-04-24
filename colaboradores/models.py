@@ -6,13 +6,14 @@ from contas.models import Conta
 from django.utils.text import slugify
 from unidecode import unidecode
 
+
 class Colaborador(models.Model):
     nome = models.CharField(max_length=50)
     sobrenome = models.CharField(max_length=50)
-    cpf = models.CharField(max_length=11)
+    cpf = models.CharField()
     data_nascimento = models.DateField()
     email = models.EmailField(unique=True)
-    telefone = models.CharField(max_length=15, blank=True) 
+    telefone = models.CharField(blank=True) 
     cargo = models.CharField(max_length=100)
     matricula = models.IntegerField(unique=True, null=True, blank=True)
     data_admissao = models.DateField()

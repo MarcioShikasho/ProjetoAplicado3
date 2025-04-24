@@ -1,75 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="text-center mb-0 py-2">Cadastrar Colaborador</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="id_nome" class="form-label fw-bold">Nome</label>
+                                    {{ form.nome|add_class:"form-control form-control-lg" }} 
+                                </div>
+                                <div class="mb-4">
+                                    <label for="id_sobrenome" class="form-label fw-bold">Sobrenome</label>
+                                    {{ form.sobrenome|add_class:"form-control form-control-lg" }} 
+                                </div>
+                                <div class="mb-4">
+                                    <label for="id_cpf" class="form-label fw-bold">CPF</label>
+                                    {{ form.cpf|add_class:"form-control form-control-lg cpfmask" }}
+                                </div>
+                                <div class="mb-4">
+                                    <label for="id_data_nascimento" class="form-label fw-bold">Data de Nascimento</label>
+                                    {{ form.data_nascimento|add_class:"form-control form-control-lg datamask" }} 
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="id_telefone" class="form-label fw-bold">Telefone</label>
+                                    {{ form.telefone|add_class:"form-control form-control-lg phonemask" }} 
+                                </div>
+                                <div class="mb-4">
+                                    <label for="id_cargo" class="form-label fw-bold">Cargo</label>
+                                    {{ form.cargo|add_class:"form-control form-control-lg" }} 
+                                </div>
+                                <div class="mb-4">
+                                    <label for="id_data_admissao" class="form-label fw-bold">Data de Admissão</label>
+                                    {{ form.data_admissao|add_class:"form-control form-control-lg datamask" }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'listar_colaboradores' %}" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-4">
+                                <i class="bi bi-person-plus-fill me-2"></i>Cadastrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
 
-    <title>Cadastrar Colaborador</title>
-</head>
-<body>
-    <h2>Cadastrar Colaborador</h2>
-
-    <ul>
-        <li><a href="{% url 'home' %}">Página Inicial</a></li>
-        <li><a href="{% url 'listar_colaboradores' %}">Listar Colaboradores</a></li>
-        <li><a href="{% url 'listar_treinamentos' %}">Listar Treinamentos</a></li>
-        <li><a href="{% url 'login' %}">logout</a></li>
-    </ul>
-
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Cadastrar</button>
-        <a href="{% url 'listar_colaboradores' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
-
-    <script>
-            $(".datamask").inputmask({
+<script>
+    console.log($);
+    // Máscara para datas
+    $(".datamask").inputmask({
         mask: "99/99/9999",
         placeholder: "dd/mm/aaaa",
         showMaskOnHover: true,
         showMaskOnFocus: true,
-        insertMode: false,        // Modo overtype
+        insertMode: false,
         clearMaskOnLostFocus: false
     });
-    
-    // Manipulador de eventos personalizado para teclas numéricas
+
+    // Máscara para CPF
+    $(".cpfmask").inputmask({
+        mask: "999.999.999-99",
+        placeholder: "___.___.___-__",
+        showMaskOnHover: true,
+        showMaskOnFocus: true
+    });
+
+    // Máscara para telefone
+    $(".phonemask").inputmask({
+        mask: ["(99) 9999-9999", "(99) 99999-9999"],
+        keepStatic: true,
+        showMaskOnHover: true,
+        showMaskOnFocus: true
+    });
+
     $(".datamask").on("keydown", function(e) {
-        // Apenas processar teclas numéricas
         if ((e.key >= '0' && e.key <= '9') || e.keyCode === 8) {
             let curPos = this.selectionStart;
-            let value = this.value;
-            
-            // Se estiver na posição de uma barra (posição 2 ou 5)
-            if (curPos === 2 || curPos === 5) {
-                if (e.keyCode !== 8) { // Se não for tecla de backspace
-                    e.preventDefault();
-                    
-                    // Avança o cursor para depois da barra e simula a digitação
-                    setTimeout(() => {
-                        this.setSelectionRange(curPos + 1, curPos + 1);
-                        let newEvent = new KeyboardEvent('keydown', {
-                            key: e.key,
-                            keyCode: e.keyCode,
-                            which: e.which,
-                            code: e.code,
-                            bubbles: true
-                        });
-                        this.dispatchEvent(newEvent);
-                    }, 5);
-                }
+            if (curPos === 2 || curPos === 5 && e.keyCode !== 8) {
+                e.preventDefault();
+                setTimeout(() => {
+                    this.selectionRange(curPos + 1, curPos + 1);
+                    let newEvent = new KeyboardEvent('keydown', e);
+                    this.dispatchEvent(newEvent);
+                }, 5);
             }
         }
     });
-    
-    // Foco automaticamente seleciona todo o conteúdo
-    $(".datamask").on("focus", function() {
+
+    $(".datamask, .cpfmask, .phonemask").on("focus", function() {
         $(this).select();
     });
-    </script>
-</body>
-</html>
+</script>
+{% endblock %}

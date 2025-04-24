@@ -1,79 +1,125 @@
-<!-- templates/colaboradores/editar_colaborador.html -->
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="text-center mb-0 py-2">Editar Colaborador</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.nome.id_for_label }}" class="form-label fw-bold">Nome</label>
+                                    {{ form.nome|add_class:"form-control form-control-lg" }}
+                                    {% if form.nome.errors %}
+                                        <div class="text-danger">{{ form.nome.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label for="{{ form.sobrenome.id_for_label }}" class="form-label fw-bold">Sobrenome</label>
+                                    {{ form.sobrenome|add_class:"form-control form-control-lg" }}
+                                    {% if form.sobrenome.errors %}
+                                        <div class="text-danger">{{ form.sobrenome.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label for="{{ form.cpf.id_for_label }}" class="form-label fw-bold">CPF</label>
+                                    {{ form.cpf|add_class:"form-control form-control-lg cpfmask" }}
+                                    {% if form.cpf.errors %}
+                                        <div class="text-danger">{{ form.cpf.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label for="{{ form.data_nascimento.id_for_label }}" class="form-label fw-bold">Data de Nascimento</label>
+                                    {{ form.data_nascimento|add_class:"form-control form-control-lg datamask" }}
+                                    {% if form.data_nascimento.errors %}
+                                        <div class="text-danger">{{ form.data_nascimento.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.telefone.id_for_label }}" class="form-label fw-bold">Telefone</label>
+                                    {{ form.telefone|add_class:"form-control form-control-lg phonemask" }}
+                                    {% if form.telefone.errors %}
+                                        <div class="text-danger">{{ form.telefone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label for="{{ form.cargo.id_for_label }}" class="form-label fw-bold">Cargo</label>
+                                    {{ form.cargo|add_class:"form-control form-control-lg" }}
+                                    {% if form.cargo.errors %}
+                                        <div class="text-danger">{{ form.cargo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label for="{{ form.data_admissao.id_for_label }}" class="form-label fw-bold">Data de Admissão</label>
+                                    {{ form.data_admissao|add_class:"form-control form-control-lg datamask" }}
+                                    {% if form.data_admissao.errors %}
+                                        <div class="text-danger">{{ form.data_admissao.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'listar_colaboradores' %}" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-4">
+                                <i class="bi bi-save me-2"></i>Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
-
-    <title>Editar Colaborador</title>
-</head>
-<body>
-
-<h2>Editar Colaborador</h2>
-
-<ul>
-    <li><a href="{% url 'home' %}">Página Inicial</a></li>
-    <li><a href="{% url 'listar_colaboradores' %}">Listar Colaboradores</a></li>
-    <li><a href="{% url 'listar_treinamentos' %}">Listar Treinamentos</a></li>
-    <li><a href="{% url 'login' %}">logout</a></li>
-</ul>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Salvar</button>
-</form>
-
-<a href="{% url 'listar_colaboradores' %}">Cancelar</a>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
 
 <script>
+    // Máscara para datas
     $(".datamask").inputmask({
         mask: "99/99/9999",
         placeholder: "dd/mm/aaaa",
         showMaskOnHover: true,
         showMaskOnFocus: true,
-        insertMode: false,        // Modo overtype
+        insertMode: false,
         clearMaskOnLostFocus: false
     });
-    
-    // Manipulador de eventos personalizado para teclas numéricas
+
+    // Máscara para telefone
+    $(".phonemask").inputmask({
+        mask: ["(99) 9999-9999", "(99) 99999-9999"],
+        keepStatic: true,
+        showMaskOnHover: true,
+        showMaskOnFocus: true
+    });
+
     $(".datamask").on("keydown", function(e) {
-        // Apenas processar teclas numéricas
         if ((e.key >= '0' && e.key <= '9') || e.keyCode === 8) {
             let curPos = this.selectionStart;
-            let value = this.value;
-            
-            // Se estiver na posição de uma barra (posição 2 ou 5)
-            if (curPos === 2 || curPos === 5) {
-                if (e.keyCode !== 8) { // Se não for tecla de backspace
-                    e.preventDefault();
-                    
-                    // Avança o cursor para depois da barra e simula a digitação
-                    setTimeout(() => {
-                        this.setSelectionRange(curPos + 1, curPos + 1);
-                        let newEvent = new KeyboardEvent('keydown', {
-                            key: e.key,
-                            keyCode: e.keyCode,
-                            which: e.which,
-                            code: e.code,
-                            bubbles: true
-                        });
-                        this.dispatchEvent(newEvent);
-                    }, 5);
-                }
+            if ((curPos === 2 || curPos === 5) && e.keyCode !== 8) {
+                e.preventDefault();
+                setTimeout(() => {
+                    this.setSelectionRange(curPos + 1, curPos + 1);
+                    let newEvent = new KeyboardEvent('keydown', e);
+                    this.dispatchEvent(newEvent);
+                }, 5);
             }
         }
     });
-    
-    // Foco automaticamente seleciona todo o conteúdo
-    $(".datamask").on("focus", function() {
+
+    $(".datamask, .cpfmask, .phonemask").on("focus", function() {
         $(this).select();
     });
 </script>
-</body>
-</html>
+{% endblock %}
