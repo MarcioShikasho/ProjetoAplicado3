@@ -10,10 +10,10 @@ from unidecode import unidecode
 class Colaborador(models.Model):
     nome = models.CharField(max_length=50)
     sobrenome = models.CharField(max_length=50)
-    cpf = models.CharField()
+    cpf = models.CharField(max_length=14)
     data_nascimento = models.DateField()
     email = models.EmailField(unique=True)
-    telefone = models.CharField(blank=True) 
+    telefone = models.CharField(blank=True, null=True, max_length=15)
     cargo = models.CharField(max_length=100)
     matricula = models.IntegerField(unique=True, null=True, blank=True)
     data_admissao = models.DateField()
@@ -106,7 +106,6 @@ class TreinamentoColaborador(models.Model):
 
         # Salva o objeto para garantir que as mudanças sejam persistidas no banco de dados
         self.save()
-
 
     def __str__(self):
         return f"{self.colaborador.nome} - {self.treinamento.nome}"

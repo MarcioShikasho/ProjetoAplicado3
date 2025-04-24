@@ -1,87 +1,127 @@
 {% extends 'base.html' %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{% load widget_tweaks %}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
 {% block content %}
 <div class="container">
-    <h2>Atribuir Treinamento</h2>
-    
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    
-    <form method="post">
-        {% csrf_token %}
-        
-        {% if form.errors %}
-        <div class="alert alert-danger">
-            Por favor, corrija os erros abaixo.
-        </div>
-        {% endif %}
-        
-        <div class="form-group mb-3">
-            {{ form.treinamento.label_tag }}
-            {{ form.treinamento.errors }}
-            {{ form.treinamento }}
-        </div>
-        
-        <div class="form-group mb-3">
-            <label>Tipo de Atribuição:</label>
-            {{ form.tipo_atribuicao.errors }}
-            {{ form.tipo_atribuicao }}
-        </div>
-        
-        <div id="div_colaboradores" class="form-group mb-3">
-            {{ form.colaboradores.label_tag }}
-            {{ form.colaboradores.errors }}
-            <div class="colaboradores-list">
-                {{ form.colaboradores }}
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <h2 class="mb-4">Atribuir Treinamento</h2>
+            
+            {% if messages %}
+            <div class="messages mb-4">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger mb-4">
+                            Por favor, corrija os erros abaixo.
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.treinamento.id_for_label }}" class="form-label">{{ form.treinamento.label }}</label>
+                            {% if form.treinamento.errors %}
+                            <div class="invalid-feedback d-block mb-2">
+                                {{ form.treinamento.errors }}
+                            </div>
+                            {% endif %}
+                            {% render_field form.treinamento class="form-select" %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Atribuição:</label>
+                            <div class="d-flex gap-3">
+                                {% for radio in form.tipo_atribuicao %}
+                                <div class="form-check">
+                                    {{ radio.tag }}
+                                    <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.tipo_atribuicao.errors %}
+                            <div class="invalid-feedback d-block mt-2">
+                                {{ form.tipo_atribuicao.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div id="div_colaboradores" class="mb-3">
+                            <label for="{{ form.colaboradores.id_for_label }}" class="form-label">{{ form.colaboradores.label }}</label>
+                            {% if form.colaboradores.errors %}
+                            <div class="invalid-feedback d-block mb-2">
+                                {{ form.colaboradores.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="colaboradores-list">
+                                {% render_field form.colaboradores class="form-control" %}
+                            </div>
+                        </div>
+                        
+                        <div id="div_cargo" class="mb-3" style="display:none;">
+                            <label for="{{ form.cargo.id_for_label }}" class="form-label">{{ form.cargo.label }}</label>
+                            {% if form.cargo.errors %}
+                            <div class="invalid-feedback d-block mb-2">
+                                {{ form.cargo.errors }}
+                            </div>
+                            {% endif %}
+                            {% render_field form.cargo class="form-select" %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.data_conclusao.id_for_label }}" class="form-label">{{ form.data_conclusao.label }}</label>
+                            {% if form.data_conclusao.errors %}
+                            <div class="invalid-feedback d-block mb-2">
+                                {{ form.data_conclusao.errors }}
+                            </div>
+                            {% endif %}
+                            {% render_field form.data_conclusao class="form-control datamask" %}
+                        </div>
+                        
+                        <div class="d-flex mt-4">
+                            <button type="submit" class="btn btn-primary">Atribuir Treinamento</button>
+                            <a href="{% url 'listar_treinamentos' %}" class="btn btn-secondary ms-2">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-        
-        <div id="div_cargo" class="form-group mb-3" style="display:none;">
-            {{ form.cargo.label_tag }}
-            {{ form.cargo.errors }}
-            {{ form.cargo }}
-        </div>
-        
-        <div class="form-group mb-3">
-            {{ form.data_conclusao.label_tag }}
-            {{ form.data_conclusao.errors }}
-            {{ form.data_conclusao }}
-        </div>
-        
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Atribuir Treinamento</button>
-            <a href="{% url 'listar_treinamentos' %}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
+    </div>
 </div>
+
+<!-- Carregamento dos scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
 
 <script>
     // JavaScript para alternar entre as opções de atribuição
     document.addEventListener('DOMContentLoaded', function() {
-        const tipoAtribuicao = document.querySelectorAll('input[name="tipo_atribuicao"]');
-        const divColaboradores = document.getElementById('div_colaboradores');
-        const divCargo = document.getElementById('div_cargo');
+    const tipoAtribuicao = document.querySelectorAll('input[name="tipo_atribuicao"]');
+    const divColaboradores = document.getElementById('div_colaboradores');
+    const divCargo = document.getElementById('div_cargo');
+    
+    function toggleAtribuicao() {
+        const selectedValue = document.querySelector('input[name="tipo_atribuicao"]:checked').value;
         
-        function toggleAtribuicao() {
-            const selectedValue = document.querySelector('input[name="tipo_atribuicao"]:checked').value;
-            
-            if (selectedValue === 'individual') {
-                divColaboradores.style.display = 'block';
-                divCargo.style.display = 'none';
-            } else if (selectedValue === 'cargo') {
-                divColaboradores.style.display = 'none';
-                divCargo.style.display = 'block';
-            }
+        if (selectedValue === 'individual') {
+            divColaboradores.style.display = 'block';
+            divCargo.style.display = 'none';
+        } else if (selectedValue === 'cargo') {
+            divColaboradores.style.display = 'none';
+            divCargo.style.display = 'block';
         }
+    }
         
         // Inicializar
         toggleAtribuicao();
@@ -92,48 +132,50 @@
         });
     });
     
-    $(".datamask").inputmask({
-        mask: "99/99/9999",
-        placeholder: "dd/mm/aaaa",
-        showMaskOnHover: true,
-        showMaskOnFocus: true,
-        insertMode: false,        // Modo overtype
-        clearMaskOnLostFocus: false
-    });
-    
-    // Manipulador de eventos personalizado para teclas numéricas
-    $(".datamask").on("keydown", function(e) {
-        // Apenas processar teclas numéricas
-        if ((e.key >= '0' && e.key <= '9') || e.keyCode === 8) {
-            let curPos = this.selectionStart;
-            let value = this.value;
-            
-            // Se estiver na posição de uma barra (posição 2 ou 5)
-            if (curPos === 2 || curPos === 5) {
-                if (e.keyCode !== 8) { // Se não for tecla de backspace
-                    e.preventDefault();
-                    
-                    // Avança o cursor para depois da barra e simula a digitação
-                    setTimeout(() => {
-                        this.setSelectionRange(curPos + 1, curPos + 1);
-                        let newEvent = new KeyboardEvent('keydown', {
-                            key: e.key,
-                            keyCode: e.keyCode,
-                            which: e.which,
-                            code: e.code,
-                            bubbles: true
-                        });
-                        this.dispatchEvent(newEvent);
-                    }, 5);
+    // Aplicar máscaras de data
+    $(document).ready(function() {
+        $(".datamask").inputmask({
+            mask: "99/99/9999",
+            placeholder: "dd/mm/aaaa",
+            showMaskOnHover: true,
+            showMaskOnFocus: true,
+            insertMode: false,        // Modo overtype
+            clearMaskOnLostFocus: false
+        });
+        
+        // Manipulador de eventos personalizado para teclas numéricas
+        $(".datamask").on("keydown", function(e) {
+            // Apenas processar teclas numéricas
+            if ((e.key >= '0' && e.key <= '9') || e.keyCode === 8) {
+                let curPos = this.selectionStart;
+                let value = this.value;
+                
+                // Se estiver na posição de uma barra (posição 2 ou 5)
+                if (curPos === 2 || curPos === 5) {
+                    if (e.keyCode !== 8) { // Se não for tecla de backspace
+                        e.preventDefault();
+                        
+                        // Avança o cursor para depois da barra e simula a digitação
+                        setTimeout(() => {
+                            this.setSelectionRange(curPos + 1, curPos + 1);
+                            let newEvent = new KeyboardEvent('keydown', {
+                                key: e.key,
+                                keyCode: e.keyCode,
+                                which: e.which,
+                                code: e.code,
+                                bubbles: true
+                            });
+                            this.dispatchEvent(newEvent);
+                        }, 5);
+                    }
                 }
             }
-        }
-    });
-    
-    // Foco automaticamente seleciona todo o conteúdo
-    $(".datamask").on("focus", function() {
-        $(this).select();
+        });
+        
+        // Foco automaticamente seleciona todo o conteúdo
+        $(".datamask").on("focus", function() {
+            $(this).select();
+        });
     });
 </script>
-
 {% endblock %}

@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Colaborador
 from .forms import ColaboradorForm
 from .forms import TreinamentoColaborador
-
+from django.http import JsonResponse
+from django.db.models import Q
 
 def listar_colaboradores(request):
     colaboradores = Colaborador.objects.all()

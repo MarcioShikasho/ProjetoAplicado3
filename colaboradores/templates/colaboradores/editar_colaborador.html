@@ -96,6 +96,13 @@
         clearMaskOnLostFocus: false
     });
 
+   // Máscara para cpf
+    $(".cpfmask").inputmask({
+        mask: ["999.999.999-99"],
+        showMaskOnHover: true,
+        showMaskOnFocus: true
+    });
+
     // Máscara para telefone
     $(".phonemask").inputmask({
         mask: ["(99) 9999-9999", "(99) 99999-9999"],

@@ -6,7 +6,7 @@
     
     <div class="mb-3">
         <a href="{% url 'listar_treinamentos' %}" class="btn btn-secondary">Voltar para Treinamentos</a>
-        <a href="{% url 'atribuir_treinamento' %}" class="btn btn-primary">Atribuir a Mais Colaboradores</a>
+        <a href="{% url 'atribuir_treinamento' %}?treinamento_id={{ treinamento.id }}" class="btn btn-primary">Atribuir a Mais Colaboradores</a>
     </div>
     
     {% if relacoes %}

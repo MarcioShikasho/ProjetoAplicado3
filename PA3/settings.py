@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'treinamentos',
     'contas',
     'widget_tweaks',
+    'django_select2',
 ]
 
 MIDDLEWARE = [

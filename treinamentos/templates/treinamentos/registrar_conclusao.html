@@ -1,30 +1,86 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block content %}
 <div class="container">
-    <h2>Registrar Conclusão</h2>
-
-    <p>Colaborador: <strong>{{ relacao.colaborador.nome }} {{ relacao.colaborador.sobrenome }}</strong></p>
-    <p>Treinamento: <strong>{{ relacao.treinamento.nome }}</strong></p>
-
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Salvar</button>
-        <a href="{% url 'listar_colaboradores_treinamento' relacao.treinamento.id %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <h2 class="mb-4">Registrar Conclusão</h2>
+            
+            {% if messages %}
+            <div class="messages mb-4">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Colaborador:</strong></p>
+                            <p class="text-primary mb-3">{{ relacao.colaborador.nome }} {{ relacao.colaborador.sobrenome }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Treinamento:</strong></p>
+                            <p class="text-primary mb-3">{{ relacao.treinamento.nome }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {% if field.errors %}
+                            <div class="invalid-feedback d-block mb-2">
+                                {% for error in field.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            {% if field.name == 'data_conclusao' %}
+                                {% render_field field class="form-control datamask" %}
+                            {% elif field.name == 'status' %}
+                                {% render_field field class="form-select" %}
+                            {% elif field.name == 'observacao' %}
+                                {% render_field field class="form-control" rows="4" %}
+                            {% else %}
+                                {% render_field field class="form-control" %}
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="d-flex mt-4">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="{% url 'listar_colaboradores_treinamento' relacao.treinamento.id %}" class="btn btn-secondary ms-2">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Certifique-se de que os scripts estão sendo carregados corretamente -->
-{% if not settings.DEBUG %}
+<!-- Carregamento dos scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
-{% endif %}
 
 <script>
     $(document).ready(function() {
-
-        
         // Identificar qualquer input que possa ser de data
         var dateInputs = $("input[name*='data'], input[id*='data'], input[placeholder*='dd/mm'], input[type='date']");
         

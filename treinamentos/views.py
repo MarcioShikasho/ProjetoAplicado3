@@ -5,6 +5,8 @@ from django.contrib import messages
 from .models import Treinamento
 from .forms import TreinamentoForm, AtribuicaoTreinamentoForm
 from colaboradores.models import Colaborador, TreinamentoColaborador
+from django.http import JsonResponse
+from django.db.models import Q
 
 
 def listar_treinamentos(request):
@@ -42,6 +44,15 @@ def excluir_treinamento(request, pk):
 
 
 def atribuir_treinamento(request):
+    treinamento_id = request.GET.get('treinamento_id')
+    initial_data = {}
+
+    if treinamento_id:
+        treinamento = get_object_or_404(Treinamento, id=treinamento_id)
+        initial_data['treinamento'] = treinamento
+
+    form = AtribuicaoTreinamentoForm(initial=initial_data)
+    
     if request.method == 'POST':
         form = AtribuicaoTreinamentoForm(request.POST)
         if form.is_valid():
@@ -51,10 +62,27 @@ def atribuir_treinamento(request):
             
             # Determinar quais colaboradores receberão o treinamento
             if tipo_atribuicao == 'individual':
-                colaboradores = form.cleaned_data.get('colaboradores', [])
-                if not colaboradores:
+                colaboradores_input = form.cleaned_data.get('colaboradores', '')
+                if not colaboradores_input:
                     form.add_error('colaboradores', 'Selecione pelo menos um colaborador.')
                     return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
+                
+                # Dividir a string de colaboradores por vírgulas e remover espaços extras
+                colaboradores_matriculas = [colaborador.strip() for colaborador in colaboradores_input.split(',')]
+                
+                # Verificar se as matrículas são válidas (apenas números)
+                for matricula in colaboradores_matriculas:
+                    if not matricula.isdigit():  # Checa se é um número válido
+                        form.add_error('colaboradores', f'A matrícula "{matricula}" não é válida. Apenas números são permitidos.')
+                        return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
+
+                # Agora, buscar os colaboradores com essas matrículas
+                colaboradores = Colaborador.objects.filter(matricula__in=colaboradores_matriculas)
+
+                if not colaboradores.exists():
+                    form.add_error('colaboradores', 'Nenhum colaborador encontrado com essas matrículas.')
+                    return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
+            
             elif tipo_atribuicao == 'cargo':
                 cargo = form.cleaned_data.get('cargo', '')
                 if cargo:
@@ -65,7 +93,7 @@ def atribuir_treinamento(request):
                 else:
                     form.add_error('cargo', 'Por favor, especifique um cargo.')
                     return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
-            
+
             # Atribuir o treinamento aos colaboradores selecionados
             contador = 0
             for colaborador in colaboradores:
@@ -83,10 +111,12 @@ def atribuir_treinamento(request):
             # Mensagem de sucesso
             messages.success(request, f'Treinamento atribuído a {contador} colaboradores com sucesso!')
             return redirect('listar_treinamentos')
+    
     else:
-        form = AtribuicaoTreinamentoForm()
+        form = AtribuicaoTreinamentoForm(initial=initial_data)
     
     return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
+
 
 
 def listar_colaboradores_treinamento(request, pk):
@@ -138,3 +168,16 @@ def remover_colaborador_treinamento(request, pk):
     relacao.delete()
     messages.success(request, 'Colaborador removido do treinamento com sucesso.')
     return redirect('listar_colaboradores_treinamento', pk=treinamento_id)
+
+
+def buscar_colaboradores(request):
+    termo = request.GET.get('termo', '')
+    if len(termo) < 2:
+        return JsonResponse([])
+    
+    colaboradores = Colaborador.objects.filter(
+        Q(nome__icontains=termo)
+    )[:10]  # Limitando a 10 resultados
+    
+    resultados = [{'id': c.id, 'nome': c.nome} for c in colaboradores]
+    return JsonResponse(resultados, safe=False)
