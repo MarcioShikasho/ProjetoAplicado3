@@ -3,11 +3,19 @@
 
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+<div class="container d-flex justify-content-center align-items-center">
     <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-6">
         <div class="card shadow p-5">
             <h3 class="text-center mb-4">Login</h3>
-            
+        {% if request.session.mensagem_modal %}
+            {% include 'includes/modal_mensagem.html' with mensagem_modal=request.session.mensagem_modal %}
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                    const modal = new bootstrap.Modal(document.getElementById('modalMensagem'));
+                    modal.show();
+                    });
+                </script>
+        {% endif %}  
             <form method="POST">
                 {% csrf_token %}
                 {% for field in form %}
@@ -22,6 +30,7 @@
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
                 </div>
+                <a href="{% url 'password_reset' %}">Esqueci minha senha</a>
             </form>
         </div>
     </div>

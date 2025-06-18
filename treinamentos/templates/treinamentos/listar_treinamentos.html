@@ -1,55 +1,84 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h2>Treinamentos</h2>
-    
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-            {{ message }}
+<div class="container mt-4 mb-5">
+    <div class="card-header bg-primary text-white rounded-top-4 px-4 py-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h3 class="mb-0 mb-md-0">Treinamentos</h3>
+            {% if request.user.is_superuser or request.user.colaborador.cargo == 'rh' or request.user.colaborador.cargo == 'gerencia' %}
+            <div class="d-flex gap-2">
+                <a href="{% url 'cadastrar_treinamento' %}" class="btn btn-light btn-sm px-3 d-inline-flex align-items-center text-nowrap">
+                    <i class="bi bi-plus-lg me-1"></i> Novo Treinamento
+                </a>
+                <a href="{% url 'atribuir_treinamento' %}" class="btn btn-success btn-sm px-4 d-inline-flex align-items-center text-nowrap">
+                    <i class="bi bi-person-plus-fill me-1"></i> Atribuir Treinamento
+                </a>
+            </div>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
-    {% endif %}
-    
-    <div class="mb-3">
-        <a href="{% url 'cadastrar_treinamento' %}" class="btn btn-primary">Novo Treinamento</a>
-        <a href="{% url 'atribuir_treinamento' %}" class="btn btn-success">Atribuir Treinamento</a>
-    </div>
-    
-    {% if treinamentos %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Status</th>
-                <th>Validade (meses)</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for treinamento in treinamentos %}
-            <tr>
-                <td>{{ treinamento.nome }}</td>
-                <td>{{ treinamento.descricao }}</td>
-                <td>{{ treinamento.get_status_display }}</td>
-                <td>{{ treinamento.prazo_validade }}</td>
-                <td>
-                    <a href="{% url 'listar_colaboradores_treinamento' treinamento.id %}" class="btn btn-sm btn-info">Ver Colaboradores</a>
-                    <a href="{% url 'editar_treinamento' treinamento.id %}" class="btn btn-sm btn-warning">Editar</a>
-                    <a href="{% url 'excluir_treinamento' treinamento.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este treinamento?')">Excluir</a>
-                </td>
-            </tr>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div class="alert alert-info">
-        Nenhum treinamento cadastrado.
+        </div>
+    {% endif %}
+
+    {% if treinamentos %}
+    <div class="card shadow rounded-4 border-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Status</th>
+                        <th>Validade (meses)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% for treinamento in treinamentos %}
+                    <tr>
+                        <td>{{ treinamento.nome }}</td>
+                        <td>{{ treinamento.descricao }}</td>
+                        <td>{{ treinamento.get_status_display }}</td>
+                        <td>{{ treinamento.prazo_validade }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-1 w-50 mx-auto">
+                                <a href="{% url 'listar_colaboradores_treinamento' treinamento.id %}" 
+                                class="btn btn-sm btn-info text-white d-flex align-items-center">
+                                    <i class="bi bi-eye me-1 text-white"></i>Ver
+                                </a>
+
+                                {% if request.user.is_superuser or request.user.colaborador.cargo == 'rh' or request.user.colaborador.cargo == 'gerencia' %}
+                                    <a href="{% url 'editar_treinamento' treinamento.id %}" 
+                                    class="btn btn-sm btn-warning text-white d-flex align-items-center">
+                                        <i class="bi bi-pencil-square me-1 text-white"></i>Editar
+                                    </a>
+
+                                    <a href="{% url 'excluir_treinamento' treinamento.id %}" 
+                                    class="btn btn-sm btn-danger d-flex align-items-center"
+                                    onclick="return confirm('Tem certeza que deseja excluir este treinamento?')">
+                                        <i class="bi bi-trash me-1 text-white"></i>Excluir
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+    {% else %}
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-info-circle me-2"></i> Nenhum treinamento cadastrado.
+        </div>
     {% endif %}
 </div>
 {% endblock %}

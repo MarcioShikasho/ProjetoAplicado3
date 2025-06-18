@@ -66,7 +66,7 @@
                         
                         <div class="d-flex mt-4">
                             <button type="submit" class="btn btn-success">Salvar</button>
-                            <a href="{% url 'listar_colaboradores_treinamento' relacao.treinamento.id %}" class="btn btn-secondary ms-2">Cancelar</a>
+                            <a href="{% url 'listar_colaboradores_treinamento' relacao.treinamento.id %}" class="btn btn-danger ms-2">Cancelar</a>
                         </div>
                     </form>
                 </div>
@@ -75,63 +75,12 @@
     </div>
 </div>
 
-<!-- Carregamento dos scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+{% endblock %}
 
-<script>
-    $(document).ready(function() {
-        // Identificar qualquer input que possa ser de data
-        var dateInputs = $("input[name*='data'], input[id*='data'], input[placeholder*='dd/mm'], input[type='date']");
-        
-        // Aplicar a máscara a todos esses campos
-        dateInputs.each(function() {
-            // Configurar para text se for date
-            if ($(this).attr('type') === 'date') {
-                $(this).attr('type', 'text');
-            }
-            
-            // Aplicar máscara
-            $(this).inputmask({
-                mask: "99/99/9999",
-                placeholder: "dd/mm/aaaa",
-                showMaskOnHover: true,
-                showMaskOnFocus: true,
-                insertMode: false,
-                clearMaskOnLostFocus: false
-            });
-            
-            // Mesmo manipulador de eventos
-            $(this).on("keydown", function(e) {
-                if ((e.key >= '0' && e.key <= '9') || e.keyCode === 8) {
-                    let curPos = this.selectionStart;
-                    let value = this.value;
-                    
-                    if (curPos === 2 || curPos === 5) {
-                        if (e.keyCode !== 8) {
-                            e.preventDefault();
-                            
-                            setTimeout(() => {
-                                this.setSelectionRange(curPos + 1, curPos + 1);
-                                let newEvent = new KeyboardEvent('keydown', {
-                                    key: e.key,
-                                    keyCode: e.keyCode,
-                                    which: e.which,
-                                    code: e.code,
-                                    bubbles: true
-                                });
-                                this.dispatchEvent(newEvent);
-                            }, 5);
-                        }
-                    }
-                }
-            });
-            
-            // Seleção ao focar
-            $(this).on("focus", function() {
-                $(this).select();
-            });
-        });
-    });
-</script>
+{% load static %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+    <script src="{% static 'js/mask.js' %}"></script>
 {% endblock %}

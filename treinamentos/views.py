@@ -5,15 +5,14 @@ from django.contrib import messages
 from .models import Treinamento
 from .forms import TreinamentoForm, AtribuicaoTreinamentoForm
 from colaboradores.models import Colaborador, TreinamentoColaborador
-from django.http import JsonResponse
-from django.db.models import Q
+from colaboradores.permissoes import cargo_requerido
 
-
+@cargo_requerido('rh', 'gerencia', 'tecnico')
 def listar_treinamentos(request):
     treinamentos = Treinamento.objects.all()
     return render(request, 'treinamentos/listar_treinamentos.html', {'treinamentos': treinamentos})
 
-
+@cargo_requerido('rh', 'gerencia')
 def cadastrar_treinamento(request):
     if request.method == "POST":
         form = TreinamentoForm(request.POST)
@@ -25,6 +24,7 @@ def cadastrar_treinamento(request):
     return render(request, 'treinamentos/cadastrar_treinamento.html', {'form': form})
 
 
+@cargo_requerido('rh', 'gerencia')
 def editar_treinamento(request, pk):
     treinamento = Treinamento.objects.get(pk=pk)
     if request.method == "POST":
@@ -37,12 +37,13 @@ def editar_treinamento(request, pk):
     return render(request, 'treinamentos/editar_treinamento.html', {'form': form})
 
 
+@cargo_requerido('gerencia')
 def excluir_treinamento(request, pk):
     treinamento = Treinamento.objects.get(pk=pk)
     treinamento.delete()
     return redirect('listar_treinamentos')
 
-
+@cargo_requerido('rh', 'gerencia')
 def atribuir_treinamento(request):
     treinamento_id = request.GET.get('treinamento_id')
     initial_data = {}
@@ -118,7 +119,7 @@ def atribuir_treinamento(request):
     return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
 
 
-
+@cargo_requerido('rh', 'gerencia', 'tecnico')
 def listar_colaboradores_treinamento(request, pk):
     treinamento = get_object_or_404(Treinamento, pk=pk)
     relacoes = TreinamentoColaborador.objects.filter(treinamento=treinamento)
@@ -143,7 +144,7 @@ class RegistrarConclusaoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['data_conclusao'].input_formats = ['%d/%m/%Y']
 
-
+@cargo_requerido('rh', 'gerencia')
 def registrar_conclusao(request, pk):
     relacao = get_object_or_404(TreinamentoColaborador, pk=pk)
     
@@ -161,23 +162,10 @@ def registrar_conclusao(request, pk):
         'relacao': relacao
     })
 
-    
+@cargo_requerido('gerencia')
 def remover_colaborador_treinamento(request, pk):
     relacao = get_object_or_404(TreinamentoColaborador, pk=pk)
     treinamento_id = relacao.treinamento.id
     relacao.delete()
     messages.success(request, 'Colaborador removido do treinamento com sucesso.')
     return redirect('listar_colaboradores_treinamento', pk=treinamento_id)
-
-
-def buscar_colaboradores(request):
-    termo = request.GET.get('termo', '')
-    if len(termo) < 2:
-        return JsonResponse([])
-    
-    colaboradores = Colaborador.objects.filter(
-        Q(nome__icontains=termo)
-    )[:10]  # Limitando a 10 resultados
-    
-    resultados = [{'id': c.id, 'nome': c.nome} for c in colaboradores]
-    return JsonResponse(resultados, safe=False)

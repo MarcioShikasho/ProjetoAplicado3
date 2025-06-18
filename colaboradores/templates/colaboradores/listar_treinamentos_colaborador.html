@@ -7,9 +7,11 @@
         <div class="card-header bg-primary text-white">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="mb-0">Treinamentos de {{ colaborador.nome }}</h2>
-                <a href="{% url 'listar_colaboradores' %}" class="btn btn-light">
-                    <i class="bi bi-arrow-left me-2"></i>Voltar
-                </a>
+                <div class="text-end">
+                    <a href="{% url 'listar_colaboradores' %}" class="btn btn-light btn-sm px-3 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-arrow-left me-1"></i> Voltar
+                    </a>
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -29,14 +31,12 @@
                             <tr>
                                 <td>{{ relacao.treinamento.nome }}</td>
                                 <td>
-                                    {% if relacao.status == 'concluido' %}
+                                    {% if relacao.status == 'valido' %}
                                         <span class="badge bg-success">{{ relacao.get_status_display }}</span>
-                                    {% elif relacao.status == 'em_andamento' %}
-                                        <span class="badge bg-warning text-dark">{{ relacao.get_status_display }}</span>
                                     {% elif relacao.status == 'pendente' %}
                                         <span class="badge bg-danger">{{ relacao.get_status_display }}</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ relacao.get_status_display }}</span>
+                                        <span class="badge bg-black">{{ relacao.get_status_display }}</span>
                                     {% endif %}
                                 </td>
                                 <td>{{ relacao.data_conclusao|default:"-"|date:"d/m/Y" }}</td>

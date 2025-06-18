@@ -17,6 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import PasswordChangeDoneView
+from contas.views import CustomPasswordChangeView 
+from contas.views import CustomLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +28,11 @@ urlpatterns = [
     path('colaboradores/', include('colaboradores.urls')),
     path('treinamentos/', include('treinamentos.urls')),
     path('', views.home, name='home'),
+    path('redefinir-senha/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('redefinir-senha/enviado/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('redefinir-senha/confirmar/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('redefinir-senha/completo/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('alterar-senha/', CustomPasswordChangeView.as_view(), name='password_change'),
+    path('senha-alterada/', PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'), name='password_change_done'),
+    path('contas/login/', CustomLoginView.as_view(), name='login'),
 ]

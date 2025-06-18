@@ -4,25 +4,25 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6 mb-4">
-            <div class="card">
+            <div class="card shadow-sm rounded-4">
                 <div class="card-body text-center">
-                    <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+                    <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
                     <h5 class="card-title mt-3">Colaboradores</h5>
                     <p class="card-text">Ver ou cadastrar colaboradores.</p>
-                    <a href="{% url 'listar_colaboradores' %}" class="btn btn-primary">Ver Colaboradores</a>
-                    <a href="{% url 'cadastrar_colaborador' %}" class="btn btn-secondary">Cadastrar Colaborador</a>
+                    <a href="{% url 'listar_colaboradores' %}" class="btn btn-primary me-2 mb-1">Ver Colaboradores</a>
+                    <a href="{% url 'cadastrar_colaborador' %}" class="btn btn-success">Cadastrar Colaborador</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 mb-4">
-            <div class="card">
+            <div class="card shadow-sm rounded-4">
                 <div class="card-body text-center">
-                    <i class="bi bi-journal-text" style="font-size: 3rem;"></i>
+                    <i class="bi bi-journal-text text-primary-emphasis" style="font-size: 3rem;"></i>
                     <h5 class="card-title mt-3">Treinamentos</h5>
                     <p class="card-text">Ver ou cadastrar treinamentos.</p>
-                    <a href="{% url 'listar_treinamentos' %}" class="btn btn-primary">Ver Treinamentos</a>
-                    <a href="{% url 'cadastrar_treinamento' %}" class="btn btn-secondary">Cadastrar Treinamento</a>
+                    <a href="{% url 'listar_treinamentos' %}" class="btn btn-primary me-2 mb-1">Ver Treinamentos</a>
+                    <a href="{% url 'cadastrar_treinamento' %}" class="btn btn-success">Cadastrar Treinamento</a>
                 </div>
             </div>
         </div>

@@ -6,6 +6,7 @@ from contas.models import Conta
 from django.utils.text import slugify
 from unidecode import unidecode
 
+CARGOS_COM_USUARIO = {'tecnico', 'gerencia', 'rh'}
 
 class Colaborador(models.Model):
     nome = models.CharField(max_length=50)
@@ -17,9 +18,15 @@ class Colaborador(models.Model):
     cargo = models.CharField(max_length=100)
     matricula = models.IntegerField(unique=True, null=True, blank=True)
     data_admissao = models.DateField()
-
+    CARGOS = [
+        ('tecnico', 'Técnico'),
+        ('gerencia', 'Gerência'),
+        ('rh', 'RH'),
+    ]
     usuario = models.OneToOneField(Conta, on_delete=models.CASCADE, related_name='colaborador', null=True, blank=True)
     treinamentos = models.ManyToManyField(Treinamento, through='TreinamentoColaborador', related_name='colaboradores_inscritos', blank=True)
+    
+    
 # Atribui o ID ao campo matricula e cria e-mail com o nome.matricula/id, depois que o objeto for salvo    
     def save(self, *args, **kwargs):           
         super().save(*args, **kwargs)  # Primeiro save: cria o ID
@@ -36,7 +43,7 @@ class Colaborador(models.Model):
                 
                 cargo_normalizado = unidecode(self.cargo.lower())
             
-                if cargo_normalizado in ['tecnico', 'gerenciador']:
+                if cargo_normalizado in CARGOS_COM_USUARIO:
                     self.criar_usuario()
                 
             atualizou_algo = True 
@@ -51,7 +58,7 @@ class Colaborador(models.Model):
             
             usuario = Conta.objects.create_user(
                 email=email_usuario,
-                password=self.cpf, 
+                password = self.cpf.replace('.', '').replace('-', '') , 
                 nome=self.nome
             )
         self.usuario = usuario
@@ -67,7 +74,15 @@ class Colaborador(models.Model):
             self.usuario.email = novo_email
             self.usuario.save()
             self.email = novo_email
-            
+    
+    def is_tecnico(self):
+        return self.cargo == 'tecnico'
+
+    def is_gerencia(self):
+        return self.cargo == 'gerencia'
+
+    def is_rh(self):
+        return self.cargo == 'rh'
 
 class TreinamentoColaborador(models.Model):
     colaborador = models.ForeignKey(Colaborador, on_delete=models.CASCADE)
