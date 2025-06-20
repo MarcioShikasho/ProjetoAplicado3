@@ -9,20 +9,38 @@ from unidecode import unidecode
 CARGOS_COM_USUARIO = {'tecnico', 'gerencia', 'rh'}
 
 class Colaborador(models.Model):
+    CARGOS = [
+        ('tecnico', 'Técnico'),
+        ('gerencia', 'Gerência'),
+        ('rh', 'RH'),
+        ('analista_dados', 'Analista de Dados'),
+        ('desenvolvedor_backend', 'Desenvolvedor Backend'),
+        ('desenvolvedor_frontend', 'Desenvolvedor Frontend'),
+        ('designer_uiux', 'Designer UI/UX'),
+        ('analista_sistemas', 'Analista de Sistemas'),
+        ('engenheiro_software', 'Engenheiro de Software'),
+        ('product_owner', 'Product Owner'),
+        ('scrum_master', 'Scrum Master'),
+        ('administrador_rede', 'Administrador de Redes'),
+        ('coordenador_projetos', 'Coordenador de Projetos'),
+        ('estagiario_ti', 'Estagiário de TI'),
+        ('suporte_tecnico', 'Suporte Técnico'),
+        ('gerente_projetos', 'Gerente de Projetos'),
+        ('analista_testes', 'Analista de Testes'),
+        ('qa', 'Engenheiro de Qualidade (QA)'),
+        ('devops', 'Engenheiro DevOps'),
+        ('analista_negocios', 'Analista de Negócios'),
+    ]
     nome = models.CharField(max_length=50)
     sobrenome = models.CharField(max_length=50)
     cpf = models.CharField(max_length=14)
     data_nascimento = models.DateField()
     email = models.EmailField(unique=True)
     telefone = models.CharField(blank=True, null=True, max_length=15)
-    cargo = models.CharField(max_length=100)
+    cargo = models.CharField(max_length=100, choices=CARGOS)
     matricula = models.IntegerField(unique=True, null=True, blank=True)
     data_admissao = models.DateField()
-    CARGOS = [
-        ('tecnico', 'Técnico'),
-        ('gerencia', 'Gerência'),
-        ('rh', 'RH'),
-    ]
+
     usuario = models.OneToOneField(Conta, on_delete=models.CASCADE, related_name='colaborador', null=True, blank=True)
     treinamentos = models.ManyToManyField(Treinamento, through='TreinamentoColaborador', related_name='colaboradores_inscritos', blank=True)
     
