@@ -13,23 +13,40 @@ class Colaborador(models.Model):
         ('tecnico', 'Técnico'),
         ('gerencia', 'Gerência'),
         ('rh', 'RH'),
-        ('analista_dados', 'Analista de Dados'),
-        ('desenvolvedor_backend', 'Desenvolvedor Backend'),
-        ('desenvolvedor_frontend', 'Desenvolvedor Frontend'),
-        ('designer_uiux', 'Designer UI/UX'),
+        
+        ('assistente_administrativo', 'Assistente Administrativo'),
+        ('analista_financeiro', 'Analista Financeiro'),
+        ('contador', 'Contador'),
+        ('analista_rh', 'Analista de RH'),
+
+        ('tratorista', 'Tratorista'),
+        ('operador_maquinas', 'Operador de Máquinas Agrícolas'),
+        ('auxiliar_campo', 'Auxiliar de Campo'),
+        ('encarregado_producao', 'Encarregado de Produção'),
+        ('supervisor_agricola', 'Supervisor Agrícola'),
+
+        ('engenheiro_agronomo', 'Engenheiro Agrônomo'),
+        ('zootecnista', 'Zootecnista'),
+        ('veterinario', 'Veterinário'),
+
+        ('motorista', 'Motorista'),
+        ('almoxarife', 'Almoxarife'),
+        ('operador_armazem', 'Operador de Armazém'),
+        ('supervisor_logistica', 'Supervisor de Logística'),
+
+        ('representante_comercial', 'Representante Comercial'),
+        ('consultor_tecnico_vendas', 'Consultor Técnico de Vendas'),
+        ('coordenador_vendas', 'Coordenador de Vendas'),
+        ('assistente_comercial', 'Assistente Comercial'),
+
+        ('mecanico_agricola', 'Mecânico Agrícola'),
+        ('eletricista', 'Eletricista'),
+        ('encanador', 'Encanador'),
+        ('supervisor_manutencao', 'Supervisor de Manutenção'),
+
+        ('tecnico_suporte', 'Técnico de Suporte'),
         ('analista_sistemas', 'Analista de Sistemas'),
-        ('engenheiro_software', 'Engenheiro de Software'),
-        ('product_owner', 'Product Owner'),
-        ('scrum_master', 'Scrum Master'),
-        ('administrador_rede', 'Administrador de Redes'),
-        ('coordenador_projetos', 'Coordenador de Projetos'),
-        ('estagiario_ti', 'Estagiário de TI'),
-        ('suporte_tecnico', 'Suporte Técnico'),
-        ('gerente_projetos', 'Gerente de Projetos'),
-        ('analista_testes', 'Analista de Testes'),
-        ('qa', 'Engenheiro de Qualidade (QA)'),
-        ('devops', 'Engenheiro DevOps'),
-        ('analista_negocios', 'Analista de Negócios'),
+        ('desenvolvedor_software', 'Desenvolvedor de Software'),
     ]
     nome = models.CharField(max_length=50)
     sobrenome = models.CharField(max_length=50)
