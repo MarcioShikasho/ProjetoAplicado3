@@ -12,24 +12,24 @@ class TreinamentoForm(forms.ModelForm):
                   'status',]
 
 class AtribuicaoTreinamentoForm(forms.Form):
-    treinamento = forms.ModelChoiceField(queryset=Treinamento.objects.all(), label='Selecione o Treinamento')
+    treinamento = forms.ModelChoiceField(queryset=Treinamento.objects.all(), label='Treinamento')
     tipo_atribuicao = forms.ChoiceField(
         choices=[
-            ('individual', 'Selecionar Colaboradores Individualmente'),
-            ('cargo', 'Selecionar por Cargo')
+            ('individual', 'Selecionar colaborador por ID'),
+            ('cargo', 'Selecionar por cargo')
         ],
         widget=forms.RadioSelect,
         initial='individual'
     )
-    colaboradores = forms.CharField(
+    colaborador_id = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={
-            'placeholder': 'Digite as matrículas dos colaboradores',
-            'rows': '2',  
-            'cols': '50',  
+        label="Matrícula do Colaborador",
+        widget=forms.TextInput(attrs={
+            'list': 'colaboradores-list',
+            'autocomplete': 'off',
+            'placeholder': 'Digite a matrícula...',
             'class': 'form-control'
-        }),
-        label="Colaboradores"
+        })
     )
     cargo = forms.ChoiceField(
         choices=Colaborador.CARGOS,

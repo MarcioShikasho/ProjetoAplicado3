@@ -58,13 +58,13 @@
                         </div>
                         
                         <div id="div_colaboradores" class="mb-3">
-                            <label for="{{ form.colaboradores.id_for_label }}" class="form-label">{{ form.colaboradores.label }}</label>
-                            {% if form.colaboradores.errors %}
-                            <div class="invalid-feedback d-block mb-2">
-                                {{ form.colaboradores.errors }}
-                            </div>
-                            {% endif %}
-                            {% render_field form.colaboradores class="form-control" %}
+                            <label for="{{ form.colaborador_id.id_for_label }}" class="form-label">Colaborador (por matrícula)</label>
+                            {% render_field form.colaborador_id class+="form-control" %}
+                            <datalist id="colaboradores-list">
+                                {% for colaborador in colaboradores %}
+                                <option value="{{ colaborador.matricula }}">{{ colaborador.nome }}</option>
+                                {% endfor %}
+                            </datalist>
                         </div>
                         
                         <div id="div_cargo" class="mb-3" style="display:none;">

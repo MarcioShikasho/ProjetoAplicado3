@@ -65,27 +65,23 @@ def atribuir_treinamento(request):
             
             # Determinar quais colaboradores receberão o treinamento
             if tipo_atribuicao == 'individual':
-                colaboradores_input = form.cleaned_data.get('colaboradores', '')
-                if not colaboradores_input:
-                    form.add_error('colaboradores', 'Selecione pelo menos um colaborador.')
+                matricula = form.cleaned_data.get('colaborador_id')
+                if not matricula or not matricula.isdigit():
+                    form.add_error('colaborador_id', 'Digite uma matrícula válida.')
                     return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
-                
-                # Dividir a string de colaboradores por vírgulas e remover espaços extras
-                colaboradores_matriculas = [colaborador.strip() for colaborador in colaboradores_input.split(',')]
-                
-                # Verificar se as matrículas são válidas (apenas números)
-                for matricula in colaboradores_matriculas:
-                    if not matricula.isdigit():  # Checa se é um número válido
-                        form.add_error('colaboradores', f'A matrícula "{matricula}" não é válida. Apenas números são permitidos.')
-                        return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
 
-                # Agora, buscar os colaboradores com essas matrículas
-                colaboradores = Colaborador.objects.filter(matricula__in=colaboradores_matriculas)
-
-                if not colaboradores.exists():
-                    form.add_error('colaboradores', 'Nenhum colaborador encontrado com essas matrículas.')
+                try:
+                    colaborador = Colaborador.objects.get(matricula=matricula)
+                except Colaborador.DoesNotExist:
+                    form.add_error('colaborador_id', 'Colaborador não encontrado.')
                     return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
-            
+
+                colaboradores = [colaborador]
+
+                if not colaboradores:
+                    form.add_error('colaborador_id', 'Colaborador não encontrado.')
+                    return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
+                            
             elif tipo_atribuicao == 'cargo':
                 cargo = form.cleaned_data.get('cargo', '')
                 if cargo:
@@ -118,7 +114,8 @@ def atribuir_treinamento(request):
     else:
         form = AtribuicaoTreinamentoForm(initial=initial_data)
     
-    return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form})
+    colaboradores = Colaborador.objects.all().only('nome', 'matricula')
+    return render(request, 'treinamentos/atribuir_treinamento.html', {'form': form, 'colaboradores': colaboradores})
 
 
 @cargo_requerido('rh', 'gerencia', 'tecnico')
