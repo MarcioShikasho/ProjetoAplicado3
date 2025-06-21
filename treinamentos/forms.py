@@ -31,9 +31,10 @@ class AtribuicaoTreinamentoForm(forms.Form):
         }),
         label="Colaboradores"
     )
-    cargo = forms.CharField(
-        max_length=100,
+    cargo = forms.ChoiceField(
+        choices=Colaborador.CARGOS,
         required=False,
+        widget=forms.Select(attrs={'class': 'form-select'}),
         label='Cargo'
     )
     data_conclusao = forms.DateField(

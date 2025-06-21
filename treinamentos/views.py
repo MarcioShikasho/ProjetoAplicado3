@@ -6,6 +6,8 @@ from .models import Treinamento
 from .forms import TreinamentoForm, AtribuicaoTreinamentoForm
 from colaboradores.models import Colaborador, TreinamentoColaborador
 from colaboradores.permissoes import cargo_requerido
+from django.http import JsonResponse
+from django.db.models import Q
 
 @cargo_requerido('rh', 'gerencia', 'tecnico')
 def listar_treinamentos(request):
@@ -169,3 +171,22 @@ def remover_colaborador_treinamento(request, pk):
     relacao.delete()
     messages.success(request, 'Colaborador removido do treinamento com sucesso.')
     return redirect('listar_colaboradores_treinamento', pk=treinamento_id)
+
+@cargo_requerido('rh', 'gerencia')
+def buscar_colaboradores(request):
+    termo = request.GET.get('termo', '')
+    if len(termo) < 2:
+        return JsonResponse([])
+    
+    colaboradores = Colaborador.objects.filter(
+        Q(nome__icontains=termo)
+    )[:10]  # Limitando a 10 resultados
+    
+    resultados = [{'id': c.id, 'nome': c.nome} for c in colaboradores]
+    return JsonResponse(resultados, safe=False)
+
+@cargo_requerido('rh', 'gerencia')
+def carregar_colaboradores(request):
+    cargo_id = request.GET.get('cargo')
+    colaboradores = Colaborador.objects.filter(cargo_id=cargo_id).values('id', 'nome')
+    return JsonResponse(list(colaboradores), safe=False)
