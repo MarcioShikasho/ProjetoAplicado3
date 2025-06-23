@@ -16,7 +16,7 @@ Sistema web Django para gerenciar treinamentos e colaboradores em uma empresa.
 ### 1. Clone o repositório:
 ```bash
 git clone https://github.com/MarcioShikasho/ProjetoAplicado3.git
-cd seu-repositorio
+cd ProjetoAplicado3
 ```
 
 ### 2. Crie e ative o ambiente virtual:
